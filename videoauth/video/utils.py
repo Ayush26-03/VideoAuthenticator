@@ -186,8 +186,9 @@ def analyze_video(video_instance):
                     pass
 
         # Release capture immediately
-        cap.release()
-        cap = None
+        if cap is not None:
+            cap.release()
+            cap = None
         gc.collect()
 
         # Save Keyframe Thumbnail & FFT Spectrum Heatmap
@@ -210,6 +211,16 @@ def analyze_video(video_instance):
                     spectrum_rel_path = os.path.join('thumbnails', spec_filename).replace('\\', '/')
             except Exception as e:
                 print(f"Error saving keyframes/spectrum: {e}")
+    except Exception as e:
+        print(f"Error during video frame processing: {e}")
+    finally:
+        if cap is not None:
+            try:
+                cap.release()
+            except Exception:
+                pass
+        gc.collect()
+
 
 
     # Calculate Forensic Sub-Scores & AI Generation Probabilities
