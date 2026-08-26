@@ -4,7 +4,7 @@ services:
     env: python
     rootDir: videoauth
     buildCommand: "./build.sh"
-    startCommand: "python manage.py migrate && gunicorn videoauth.wsgi:application --timeout 120"
+    startCommand: "gunicorn videoauth.wsgi:application --bind 0.0.0.0:$PORT --timeout 120"
     envVars:
       - key: PYTHON_VERSION
         value: 3.10.12

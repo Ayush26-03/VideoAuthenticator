@@ -1,1 +1,1 @@
-web: python manage.py migrate && gunicorn videoauth.wsgi:application --timeout 120
+web: gunicorn videoauth.wsgi:application --bind 0.0.0.0:$PORT --timeout 120
