@@ -13,9 +13,13 @@ urlpatterns = [
     path('admin/', admin.site.urls),
     path('video/', include('video.urls')),
     path('', RedirectView.as_view(url='/video/')),
+    path('login/', auth_views.LoginView.as_view(template_name='login.html')),
+    path('logout/', auth_views.LogoutView.as_view(next_page='login')),
+    path('register/', video_views.register),
     path('account/login/', auth_views.LoginView.as_view(template_name='login.html'), name='login'),
     path('account/logout/', auth_views.LogoutView.as_view(next_page='login'), name='logout'),
     path('account/register/', video_views.register, name='register'),
     re_path(r'^media/(?P<path>.*)$', serve, {'document_root': settings.MEDIA_ROOT}),
 ]
+
 
