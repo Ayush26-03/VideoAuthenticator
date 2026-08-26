@@ -10,8 +10,22 @@
 
 ---
 
+## 📌 What is VideoAuthenticator?
+
+With the rapid explosion of photorealistic AI video generators (such as OpenAI Sora, Runway, Pika, Kling, and DeepFaceLab), distinguishing real camera recordings from fabricated synthetic media has become a critical challenge for journalism, law, security, and digital identity verification.
+
+**VideoAuthenticator** solves this by performing multi-layer forensic analysis on video files. Instead of relying solely on black-box heuristics, it inspects digital artifacts left behind by AI generation tools — including **frequency domain grid patterns (2D FFT)**, **lack of hardware camera sensor noise (PRNU)**, **spatial facial over-smoothing**, and **temporal frame inconsistencies** — providing an instant, transparent credibility score and downloadable verification certificate.
+
+### ⚡ Quick Summary (How It Works):
+1. 📤 **Upload Any Video**: Drag and drop MP4, AVI, MOV, or MKV files.
+2. 🔬 **Automated Forensic Scan**: The engine extracts keyframes and runs multi-layer computer vision & frequency spectrum checks.
+3. 📊 **Instant Verdict & Report**: View the **Authenticity Score (0–100%)**, **AI Generation Likelihood**, interactive **FFT Heatmaps**, and export a verified **JSON Forensic Certificate**.
+
+---
+
 ## 🌐 Live Production Demo
 👉 **[https://videoauthenticator-0elu.onrender.com](https://videoauthenticator-0elu.onrender.com)**
+
 
 ---
 
