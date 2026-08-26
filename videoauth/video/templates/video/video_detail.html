@@ -1,0 +1,255 @@
+{% extends 'base.html' %}
+
+{% block title %}{{ video.title }} - AI Deepfake Forensic Report{% endblock %}
+
+{% block content %}
+<!-- Top Header & Breadcrumb -->
+<div style="margin-bottom: 1.5rem; display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 1rem;">
+    <div>
+        <a href="{% url 'video_list' %}" style="font-size: 0.88rem; color: var(--text-muted);">
+            <i class="fa-solid fa-arrow-left"></i> Back to Video Gallery
+        </a>
+        <h1 style="font-size: 1.8rem; margin-top: 6px; display: flex; align-items: center; gap: 12px;">
+            {{ video.title }}
+            {% if video.verification_status == 'Authentic' %}
+                <span class="badge-status badge-authentic"><i class="fa-solid fa-shield-check"></i> Real Camera Footage</span>
+            {% elif video.verification_status == 'Suspicious' %}
+                <span class="badge-status badge-suspicious"><i class="fa-solid fa-triangle-exclamation"></i> Suspicious / Altered</span>
+            {% elif video.verification_status == 'Deepfake' %}
+                <span class="badge-status badge-deepfake"><i class="fa-solid fa-robot"></i> AI Generated / Deepfake</span>
+            {% else %}
+                <span class="badge-status badge-pending">{{ video.verification_status }}</span>
+            {% endif %}
+        </h1>
+    </div>
+
+    <div style="display: flex; gap: 10px;">
+        <a href="{% url 'export_report' video.pk %}" class="btn btn-secondary btn-sm">
+            <i class="fa-solid fa-file-arrow-down"></i> Export Certificate (JSON)
+        </a>
+        {% if user == video.uploaded_by or user.is_superuser %}
+        <a href="{% url 'video_delete' video.pk %}" class="btn btn-danger btn-sm">
+            <i class="fa-solid fa-trash-can"></i> Delete
+        </a>
+        {% endif %}
+    </div>
+</div>
+
+<!-- Prominent AI Verification Verdict Banner -->
+<div class="glass-card" style="margin-bottom: 1.8rem; padding: 1.5rem; border-left: 6px solid {% if video.verification_status == 'Authentic' %}var(--status-authentic){% elif video.verification_status == 'Suspicious' %}var(--status-suspicious){% else %}var(--status-deepfake){% endif %};">
+    <div style="display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 1rem;">
+        <div>
+            <div style="font-size: 0.8rem; text-transform: uppercase; letter-spacing: 0.08em; color: var(--text-muted);">
+                AI Video Authenticator Analysis Verdict
+            </div>
+            <h2 style="font-size: 1.5rem; margin-top: 4px; color: {% if video.verification_status == 'Authentic' %}var(--status-authentic){% elif video.verification_status == 'Suspicious' %}var(--status-suspicious){% else %}var(--status-deepfake){% endif %};">
+                {% if report.forensic_verdict %}
+                    {{ report.forensic_verdict }}
+                {% else %}
+                    {{ video.verification_status|upper }}
+                {% endif %}
+            </h2>
+        </div>
+        
+        <div style="text-align: right;">
+            <div style="font-size: 0.8rem; color: var(--text-muted); text-transform: uppercase;">Deepfake Risk Level</div>
+            <span class="badge-status {% if video.verification_status == 'Authentic' %}badge-authentic{% elif video.verification_status == 'Suspicious' %}badge-suspicious{% else %}badge-deepfake{% endif %}" style="font-size: 0.95rem; margin-top: 4px;">
+                <i class="fa-solid fa-shield"></i> {{ report.deepfake_risk_level|default:"EVALUATED" }}
+            </span>
+        </div>
+    </div>
+</div>
+
+<!-- Main Detail Grid -->
+<div class="detail-grid">
+    <!-- Left Side: Video Player, FFT Spectrum & Forensic Audit -->
+    <div>
+        <div class="player-container">
+            <video controls poster="{% if video.thumbnail %}{{ video.thumbnail.url }}{% endif %}">
+                <source src="{{ video.file.url }}" type="video/mp4">
+                Your browser does not support HTML5 video player.
+            </video>
+        </div>
+
+        <!-- FFT Spectrum & Keyframe Heatmap -->
+        {% if report.spectrum_image_url %}
+        <div class="glass-card" style="margin-bottom: 1.5rem; padding: 1.2rem;">
+            <h3 style="font-size: 1.05rem; margin-bottom: 10px; display: flex; align-items: center; gap: 8px;">
+                <i class="fa-solid fa-wave-square" style="color: var(--cyan);"></i> 2D FFT Frequency Spectrum Analysis
+            </h3>
+            <p style="font-size: 0.85rem; color: var(--text-muted); margin-bottom: 12px;">
+                Frequency domain spectral distribution. AI generation models leave unnatural high-frequency grid artifacts or uniform spectral decay patterns.
+            </p>
+            <div style="width: 100%; border-radius: var(--radius-sm); overflow: hidden; background: #000; text-align: center;">
+                <img src="{{ report.spectrum_image_url }}" alt="FFT Spectrum Heatmap" style="width: 100%; max-height: 240px; object-fit: contain;">
+            </div>
+        </div>
+        {% endif %}
+
+        {% if video.description %}
+        <div class="glass-card" style="margin-bottom: 1.5rem; padding: 1.2rem;">
+            <h4 style="font-size: 0.95rem; margin-bottom: 6px; color: var(--text-muted);">
+                <i class="fa-solid fa-align-left"></i> Video Description / Context
+            </h4>
+            <p style="font-size: 0.95rem;">{{ video.description }}</p>
+        </div>
+        {% endif %}
+
+        <!-- Detected Anomalies & Forensic Audit Log -->
+        <div class="glass-card">
+            <h3 style="font-size: 1.1rem; margin-bottom: 1rem; display: flex; align-items: center; gap: 8px;">
+                <i class="fa-solid fa-list-check" style="color: var(--cyan);"></i> AI & Forensic Audit Findings
+            </h3>
+
+            {% if report.anomalies_detected %}
+                <ul style="list-style: none; display: flex; flex-direction: column; gap: 10px;">
+                {% for anomaly in report.anomalies_detected %}
+                    <li style="background: rgba(255, 255, 255, 0.03); border: 1px solid var(--border-color); border-radius: var(--radius-sm); padding: 10px 14px; font-size: 0.9rem; display: flex; align-items: flex-start; gap: 10px;">
+                        {% if video.verification_status == 'Authentic' %}
+                            <i class="fa-solid fa-circle-check" style="color: var(--status-authentic); margin-top: 3px;"></i>
+                        {% else %}
+                            <i class="fa-solid fa-triangle-exclamation" style="color: var(--status-suspicious); margin-top: 3px;"></i>
+                        {% endif %}
+                        <span>{{ anomaly }}</span>
+                    </li>
+                {% endfor %}
+                </ul>
+            {% else %}
+                <p style="color: var(--text-muted); font-size: 0.9rem;">No forensic anomalies reported.</p>
+            {% endif %}
+        </div>
+    </div>
+
+    <!-- Right Side: AI Probability Gauge, Metrics & Provenance -->
+    <div>
+        <!-- AI Probability Radial Gauge Card -->
+        <div class="glass-card gauge-card" style="margin-bottom: 1.5rem;">
+            <h3 style="font-size: 1.1rem; color: var(--text-muted);">Authenticity vs AI Generation</h3>
+            
+            <div class="gauge-circle" style="--score-pct: {{ video.authenticity_score }};">
+                <div class="gauge-content">
+                    <div class="gauge-val">{{ video.authenticity_score }}%</div>
+                    <div class="gauge-lbl">Authentic Real</div>
+                </div>
+            </div>
+
+            <div style="width: 100%; margin-top: 1rem; padding: 10px; background: rgba(255,255,255,0.03); border-radius: var(--radius-sm);">
+                <div style="display: flex; justify-content: space-between; font-size: 0.85rem; font-weight: 600; margin-bottom: 4px;">
+                    <span>AI Generation Likelihood:</span>
+                    <span style="color: {% if report.ai_generation_probability > 50 %}var(--status-deepfake){% else %}var(--status-authentic){% endif %};">
+                        {{ report.ai_generation_probability|default:"0.0" }}%
+                    </span>
+                </div>
+                <div class="progress-bar-bg">
+                    <div class="progress-bar-fill" style="width: {{ report.ai_generation_probability|default:0 }}%; background: linear-gradient(90deg, var(--status-suspicious), var(--status-deepfake));"></div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Metric Sub-Scores Breakdown -->
+        <div class="glass-card" style="margin-bottom: 1.5rem;">
+            <h3 style="font-size: 1.1rem; margin-bottom: 1rem;">
+                <i class="fa-solid fa-sliders" style="color: var(--primary);"></i> Forensic Sub-Metric Scores
+            </h3>
+
+            <div class="metrics-subgrid">
+                <!-- Metadata Score -->
+                <div class="metric-box">
+                    <div class="metric-header">
+                        <span>Metadata & Container</span>
+                        <span style="color: var(--cyan);">{{ video.metadata_score }}%</span>
+                    </div>
+                    <div class="progress-bar-bg">
+                        <div class="progress-bar-fill" style="width: {{ video.metadata_score }}%;"></div>
+                    </div>
+                </div>
+
+                <!-- Spatial Score -->
+                <div class="metric-box">
+                    <div class="metric-header">
+                        <span>Spatial Sharpness / Smoothing</span>
+                        <span style="color: var(--primary);">{{ video.spatial_score }}%</span>
+                    </div>
+                    <div class="progress-bar-bg">
+                        <div class="progress-bar-fill" style="width: {{ video.spatial_score }}%;"></div>
+                    </div>
+                </div>
+
+                <!-- Temporal Score -->
+                <div class="metric-box">
+                    <div class="metric-header">
+                        <span>Temporal Continuity</span>
+                        <span style="color: var(--purple);">{{ video.temporal_score }}%</span>
+                    </div>
+                    <div class="progress-bar-bg">
+                        <div class="progress-bar-fill" style="width: {{ video.temporal_score }}%;"></div>
+                    </div>
+                </div>
+
+                <!-- Sensor Noise Score -->
+                <div class="metric-box">
+                    <div class="metric-header">
+                        <span>Sensor Noise & FFT Spectrum</span>
+                        <span style="color: var(--status-authentic);">{{ video.noise_score }}%</span>
+                    </div>
+                    <div class="progress-bar-bg">
+                        <div class="progress-bar-fill" style="width: {{ video.noise_score }}%;"></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Technical Metadata & Digital Provenance Table -->
+        <div class="glass-card">
+            <h3 style="font-size: 1.1rem; margin-bottom: 0.5rem; display: flex; align-items: center; gap: 8px;">
+                <i class="fa-solid fa-fingerprint" style="color: var(--cyan);"></i> Cryptographic Provenance
+            </h3>
+
+            <table class="forensic-table">
+                <tbody>
+                    <tr>
+                        <th>SHA-256 Hash</th>
+                        <td class="code-hash">{{ video.file_hash|default:"N/A" }}</td>
+                    </tr>
+                    <tr>
+                        <th>Resolution</th>
+                        <td>{{ video.resolution|default:"Unknown" }}</td>
+                    </tr>
+                    <tr>
+                        <th>Frame Rate (FPS)</th>
+                        <td>{{ video.fps }} fps</td>
+                    </tr>
+                    <tr>
+                        <th>Frame Count</th>
+                        <td>{{ video.frame_count }} frames</td>
+                    </tr>
+                    <tr>
+                        <th>Duration</th>
+                        <td>{{ video.duration }} seconds</td>
+                    </tr>
+                    <tr>
+                        <th>Video Codec</th>
+                        <td>{{ video.video_codec|default:"H264" }}</td>
+                    </tr>
+                    <tr>
+                        <th>Uploaded By</th>
+                        <td>{{ video.uploaded_by.username }} on {{ video.uploaded_at|date:"M d, Y H:i" }}</td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+
+<!-- Raw Forensic Certificate Details (Collapsible JSON) -->
+<div class="glass-card" style="margin-top: 1.5rem;">
+    <details>
+        <summary style="cursor: pointer; font-weight: 600; color: var(--cyan); outline: none;">
+            <i class="fa-solid fa-code"></i> View Full Cryptographic Inspection JSON Certificate
+        </summary>
+        <div style="margin-top: 1rem;">
+            <pre class="json-viewer">{{ report_json_pretty }}</pre>
+        </div>
+    </details>
+</div>
+{% endblock %}

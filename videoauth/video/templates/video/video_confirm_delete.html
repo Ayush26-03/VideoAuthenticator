@@ -1,0 +1,29 @@
+{% extends 'base.html' %}
+
+{% block title %}Confirm Delete - VideoAuthenticator{% endblock %}
+
+{% block content %}
+<div class="auth-wrapper">
+    <div class="glass-card" style="text-align: center;">
+        <div style="font-size: 3rem; color: var(--status-deepfake); margin-bottom: 1rem;">
+            <i class="fa-solid fa-triangle-exclamation"></i>
+        </div>
+        <h2>Confirm Deletion</h2>
+        <p style="color: var(--text-muted); margin-top: 8px; margin-bottom: 1.5rem;">
+            Are you sure you want to permanently delete <strong>"{{ video.title }}"</strong>? This action cannot be undone.
+        </p>
+
+        <form method="post">
+            {% csrf_token %}
+            <div style="display: flex; gap: 12px; justify-content: center;">
+                <a href="{% url 'video_detail' video.pk %}" class="btn btn-secondary">
+                    Cancel
+                </a>
+                <button type="submit" class="btn btn-danger">
+                    <i class="fa-solid fa-trash-can"></i> Yes, Delete Video
+                </button>
+            </div>
+        </form>
+    </div>
+</div>
+{% endblock %}

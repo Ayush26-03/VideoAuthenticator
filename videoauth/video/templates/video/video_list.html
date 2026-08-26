@@ -1,0 +1,146 @@
+{% extends 'base.html' %}
+
+{% block title %}Dashboard - VideoAuthenticator{% endblock %}
+
+{% block content %}
+<div style="margin-bottom: 2rem; display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 1rem;">
+    <div>
+        <h1 style="font-size: 2rem;">Forensic Video Dashboard</h1>
+        <p style="color: var(--text-muted);">Real-time multi-layer AI deepfake & digital provenance analysis</p>
+    </div>
+    {% if user.is_authenticated %}
+    <a href="{% url 'video_upload' %}" class="btn btn-primary">
+        <i class="fa-solid fa-cloud-arrow-up"></i> Analyze New Video
+    </a>
+    {% endif %}
+</div>
+
+<!-- Statistics Counter Grid -->
+<div class="stats-grid">
+    <div class="stat-card">
+        <div class="stat-icon total"><i class="fa-solid fa-video"></i></div>
+        <div>
+            <div class="stat-val">{{ stats.total }}</div>
+            <div class="stat-lbl">Total Analyzed</div>
+        </div>
+    </div>
+    <div class="stat-card">
+        <div class="stat-icon authentic"><i class="fa-solid fa-circle-check"></i></div>
+        <div>
+            <div class="stat-val">{{ stats.authentic }}</div>
+            <div class="stat-lbl">Authentic Real</div>
+        </div>
+    </div>
+    <div class="stat-card">
+        <div class="stat-icon deepfake"><i class="fa-solid fa-triangle-exclamation"></i></div>
+        <div>
+            <div class="stat-val">{{ stats.deepfake }}</div>
+            <div class="stat-lbl">Deepfakes Flagged</div>
+        </div>
+    </div>
+    <div class="stat-card">
+        <div class="stat-icon score"><i class="fa-solid fa-chart-line"></i></div>
+        <div>
+            <div class="stat-val">{{ stats.avg_score }}%</div>
+            <div class="stat-lbl">Avg Authenticity</div>
+        </div>
+    </div>
+</div>
+
+<!-- Toolbar: Search & Filter Pills -->
+<div class="toolbar">
+    <form method="get" class="search-box">
+        <i class="fa-solid fa-magnifying-glass search-icon"></i>
+        <input type="text" name="q" value="{{ query }}" class="search-input" placeholder="Search by video title, description or SHA-256 hash...">
+        {% if selected_status != 'all' %}
+            <input type="hidden" name="status" value="{{ selected_status }}">
+        {% endif %}
+    </form>
+
+    <div class="filter-pills">
+        <a href="?status=all{% if query %}&q={{ query }}{% endif %}" class="pill {% if selected_status == 'all' %}active{% endif %}">
+            All
+        </a>
+        <a href="?status=Authentic{% if query %}&q={{ query }}{% endif %}" class="pill {% if selected_status == 'Authentic' %}active{% endif %}">
+            <i class="fa-solid fa-check" style="color: var(--status-authentic);"></i> Authentic
+        </a>
+        <a href="?status=Suspicious{% if query %}&q={{ query }}{% endif %}" class="pill {% if selected_status == 'Suspicious' %}active{% endif %}">
+            <i class="fa-solid fa-triangle-exclamation" style="color: var(--status-suspicious);"></i> Suspicious
+        </a>
+        <a href="?status=Deepfake{% if query %}&q={{ query }}{% endif %}" class="pill {% if selected_status == 'Deepfake' %}active{% endif %}">
+            <i class="fa-solid fa-bug" style="color: var(--status-deepfake);"></i> Deepfake
+        </a>
+    </div>
+</div>
+
+<!-- Video Gallery Grid -->
+{% if videos %}
+    <div class="video-grid">
+        {% for video in videos %}
+        <div class="video-card">
+            <div class="video-thumb-wrapper">
+                {% if video.thumbnail %}
+                    <img src="{{ video.thumbnail.url }}" alt="{{ video.title }}" class="video-thumb">
+                {% else %}
+                    <div class="video-thumb-placeholder">
+                        <i class="fa-solid fa-file-video" style="font-size: 2.5rem;"></i>
+                    </div>
+                {% endif %}
+
+                <div class="score-badge-overlay">
+                    {% if video.verification_status == 'Authentic' %}
+                        <span class="badge-status badge-authentic"><i class="fa-solid fa-shield-check"></i> {{ video.authenticity_score }}% Real</span>
+                    {% elif video.verification_status == 'Suspicious' %}
+                        <span class="badge-status badge-suspicious"><i class="fa-solid fa-triangle-exclamation"></i> {{ video.authenticity_score }}% Suspicious</span>
+                    {% elif video.verification_status == 'Deepfake' %}
+                        <span class="badge-status badge-deepfake"><i class="fa-solid fa-skull-crossbones"></i> {{ video.authenticity_score }}% Deepfake</span>
+                    {% else %}
+                        <span class="badge-status badge-pending">{{ video.verification_status }}</span>
+                    {% endif %}
+                </div>
+            </div>
+
+            <div class="video-card-body">
+                <h3 class="video-card-title">{{ video.title }}</h3>
+                
+                <div class="video-card-meta">
+                    <span><i class="fa-solid fa-user"></i> {{ video.uploaded_by.username }}</span>
+                    <span><i class="fa-solid fa-clock"></i> {{ video.uploaded_at|date:"M d, Y" }}</span>
+                </div>
+
+                {% if video.description %}
+                    <p class="video-card-desc">{{ video.description }}</p>
+                {% endif %}
+
+                <div class="video-card-footer">
+                    <a href="{% url 'video_detail' video.pk %}" class="btn btn-secondary btn-sm">
+                        <i class="fa-solid fa-microscope"></i> View Report
+                    </a>
+
+                    {% if user == video.uploaded_by or user.is_superuser %}
+                    <a href="{% url 'video_delete' video.pk %}" class="btn btn-danger btn-sm" style="padding: 4px 8px;">
+                        <i class="fa-solid fa-trash-can"></i>
+                    </a>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+        {% endfor %}
+    </div>
+{% else %}
+    <div class="glass-card" style="text-align: center; padding: 4rem 2rem;">
+        <div style="font-size: 3.5rem; color: var(--text-dim); margin-bottom: 1rem;">
+            <i class="fa-solid fa-film"></i>
+        </div>
+        <h3>No videos found</h3>
+        <p style="color: var(--text-muted); margin-top: 6px; margin-bottom: 1.5rem;">
+            No videos match your search or filter parameters.
+        </p>
+        {% if user.is_authenticated %}
+        <a href="{% url 'video_upload' %}" class="btn btn-primary">
+            <i class="fa-solid fa-cloud-arrow-up"></i> Upload a Video Now
+        </a>
+        {% endif %}
+    </div>
+{% endif %}
+{% endblock %}

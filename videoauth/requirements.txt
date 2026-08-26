@@ -1,0 +1,12 @@
+Django==5.2.8
+gunicorn==26.0.0
+whitenoise==6.9.0
+dj-database-url==2.3.0
+psycopg2-binary==2.9.10
+opencv-python-headless==5.0.0.93
+numpy==2.2.3
+pillow==11.1.0
+matplotlib==3.10.1
+ImageIO==2.37.0
+sqlparse==0.5.3
+asgiref==3.8.1
