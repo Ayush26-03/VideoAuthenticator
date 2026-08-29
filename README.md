@@ -10,85 +10,85 @@
 
 ---
 
-## 📌 What is VideoAuthenticator?
+##  What is VideoAuthenticator?
 
 With the rapid explosion of photorealistic AI video generators (such as OpenAI Sora, Runway, Pika, Kling, and DeepFaceLab), distinguishing real camera recordings from fabricated synthetic media has become a critical challenge for journalism, law, security, and digital identity verification.
 
 **VideoAuthenticator** solves this by performing multi-layer forensic analysis on video files. Instead of relying solely on black-box heuristics, it inspects digital artifacts left behind by AI generation tools — including **frequency domain grid patterns (2D FFT)**, **lack of hardware camera sensor noise (PRNU)**, **spatial facial over-smoothing**, and **temporal frame inconsistencies** — providing an instant, transparent credibility score and downloadable verification certificate.
 
-### ⚡ Quick Summary (How It Works):
-1. 📤 **Upload Any Video**: Drag and drop MP4, AVI, MOV, or MKV files.
-2. 🔬 **Automated Forensic Scan**: The engine extracts keyframes and runs multi-layer computer vision & frequency spectrum checks.
-3. 📊 **Instant Verdict & Report**: View the **Authenticity Score (0–100%)**, **AI Generation Likelihood**, interactive **FFT Heatmaps**, and export a verified **JSON Forensic Certificate**.
+###  Quick Summary (How It Works):
+1. **Upload Any Video**: Drag and drop MP4, AVI, MOV, or MKV files.
+2.  **Automated Forensic Scan**: The engine extracts keyframes and runs multi-layer computer vision & frequency spectrum checks.
+3. **Instant Verdict & Report**: View the **Authenticity Score (0–100%)**, **AI Generation Likelihood**, interactive **FFT Heatmaps**, and export a verified **JSON Forensic Certificate**.
 
 ---
 
-## 🌐 Live Production Demo
-👉 **[https://videoauthenticator-0elu.onrender.com](https://videoauthenticator-0elu.onrender.com)**
+##  Live Production Demo
+ **[https://videoauthenticator-0elu.onrender.com](https://videoauthenticator-0elu.onrender.com)**
 
 
 ---
 
-## 🌟 Key Forensic Capabilities
+## Key Forensic Capabilities
 
-### 1. 🤖 2D Fast Fourier Transform (FFT) Frequency Domain Spectrum
+### 1.  2D Fast Fourier Transform (FFT) Frequency Domain Spectrum
 - Analyzes video frames in the frequency domain using 2D FFT.
 - Detects the microscopic, high-frequency checkerboard grid artifacts and non-physical spectral decay signatures inherent to generative neural networks (GANs, Diffusion models, and autoregressive video generators).
 - Generates a **colorized Jet Spectrum Heatmap** embedded in the forensic report.
 
-### 2. 📷 Camera Sensor Noise (PRNU) & Residual Variance
+### 2.  Camera Sensor Noise (PRNU) & Residual Variance
 - Extracts high-frequency residual noise patterns ($\sigma_{\text{noise}}$) via spatial filtering.
 - Validates the presence of authentic **Photo Response Non-Uniformity (PRNU)** camera sensor noise, which is naturally present in real camera sensors but omitted by synthetic, over-smoothed AI generators.
 
-### 3. 🔍 Spatial Blur & Facial Over-Smoothing Detection
+### 3.  Spatial Blur & Facial Over-Smoothing Detection
 - Calculates inter-frame **Laplacian variance** $\text{Var}(\Delta I)$.
 - Detects synthetic skin smoothing, loss of micro-textures, face-swap blending seams, and unnatural sharpness fluctuations.
 
-### 4. 🎞️ Inter-Frame Temporal Continuity & Warp Checking
+### 4.  Inter-Frame Temporal Continuity & Warp Checking
 - Performs multi-channel color histogram correlation across sequential sampled frames.
 - Identifies temporal flickering, frame-splicing glitches, warping distortions, and face-swap boundary inconsistencies.
 
-### 5. 🚨 Composite AI Likelihood % & Verdict Classification
+### 5.  Composite AI Likelihood % & Verdict Classification
 - Outputs a weighted **Overall Authenticity Score** (0–100) and **AI Generation Probability %**.
 - Categorizes each upload into three transparent verdicts:
-  - 🚨 **`AI GENERATED VIDEO / DEEPFAKE DETECTED`** (`CRITICAL RISK`)
-  - ⚠️ **`SUSPICIOUS / POTENTIALLY ALTERED VIDEO`** (`MEDIUM RISK`)
-  - ✅ **`VERIFIED REAL CAMERA FOOTAGE`** (`LOW RISK`)
+  -  **`AI GENERATED VIDEO / DEEPFAKE DETECTED`** (`CRITICAL RISK`)
+  -  **`SUSPICIOUS / POTENTIALLY ALTERED VIDEO`** (`MEDIUM RISK`)
+  -  **`VERIFIED REAL CAMERA FOOTAGE`** (`LOW RISK`)
 
-### 6. 🔐 Cryptographic Provenance (SHA-256 Digital Fingerprint)
+### 6.  Cryptographic Provenance (SHA-256 Digital Fingerprint)
 - Generates an immutable **SHA-256 digital hash** of the uploaded video binary to prove chain-of-custody and prevent tampering.
 
-### 7. 📄 Exportable Forensic JSON Certificates
+### 7.  Exportable Forensic JSON Certificates
 - Enables one-click download of structured **Forensic Verification Certificates** containing full metadata, technical parameters, forensic sub-scores, and detected anomaly logs.
 
-### 8. 🎨 Glassmorphic Dark UI & Interactive Analytics
+### 8.  Glassmorphic Dark UI & Interactive Analytics
 - Sleek dark aesthetic with backdrop blur effects, animated risk meters, interactive filters (`All`, `Authentic`, `Suspicious`, `Deepfake`), real-time search, and video playback with forensic side-by-side comparisons.
 
 ---
 
-## 🔬 Forensic Verification Architecture
+##  Forensic Verification Architecture
 
 ```mermaid
 graph TD
-    A[🎬 Video Upload] --> B[🔒 Compute SHA-256 Digital Hash]
-    B --> C[📊 Extract Technical Metadata: FPS, Resolution, Codec, Duration]
-    C --> D[🎞️ Memory-Safe Keyframe Extraction & Downsampling]
-    D --> E[🌈 2D FFT Frequency Magnitude Heatmap]
-    D --> F[📷 Sensor Noise Residual Extraction PRNU]
-    D --> G[🔍 Spatial Blur & Laplacian Variance]
-    D --> H[📈 Inter-Frame Color Histogram Correlation]
-    D --> I[👤 Haar Cascade Facial Region Analysis]
-    E & F & G & H & I --> J[🧮 Compute Weighted Composite Authenticity Score]
+    A[ Video Upload] --> B[ Compute SHA-256 Digital Hash]
+    B --> C[ Extract Technical Metadata: FPS, Resolution, Codec, Duration]
+    C --> D[ Memory-Safe Keyframe Extraction & Downsampling]
+    D --> E[ 2D FFT Frequency Magnitude Heatmap]
+    D --> F[ Sensor Noise Residual Extraction PRNU]
+    D --> G[ Spatial Blur & Laplacian Variance]
+    D --> H[ Inter-Frame Color Histogram Correlation]
+    D --> I[ Haar Cascade Facial Region Analysis]
+    E & F & G & H & I --> J[ Compute Weighted Composite Authenticity Score]
     J --> K{Risk Verdict}
-    K -->|Score >= 78%| L[✅ Authentic Real Footage]
-    K -->|52% <= Score < 78%| M[⚠️ Suspicious / Altered]
-    K -->|Score < 52%| N[🚨 AI Deepfake Detected]
-    L & M & N --> O[📄 Interactive Report & Exportable Forensic JSON]
+    K -->|Score >= 78%| L[ Authentic Real Footage]
+    K -->|52% <= Score < 78%| M[ Suspicious / Altered]
+    K -->|Score < 52%| N[ AI Deepfake Detected]
+    L & M & N --> O[ Interactive Report & Exportable Forensic JSON]
 ```
 
 ---
 
-## 🛡️ Forensic Metrics Matrix
+##  Forensic Metrics Matrix
 
 | Forensic Metric | Analysis Methodology | Detected Anomalies |
 | :--- | :--- | :--- |
@@ -100,7 +100,7 @@ graph TD
 
 ---
 
-## 🛠️ Technology Stack
+##  Technology Stack
 
 - **Backend Framework**: Python 3.10+, Django 5.2
 - **Computer Vision & AI**: OpenCV (`opencv-python-headless`), NumPy, Pillow, Matplotlib, ImageIO
@@ -111,7 +111,7 @@ graph TD
 
 ---
 
-## 📁 Repository Structure
+##  Repository Structure
 
 ```text
 VideoAuthenticator/
@@ -144,7 +144,7 @@ VideoAuthenticator/
 
 ---
 
-## ⚙️ Local Installation & Setup
+## Local Installation & Setup
 
 ### 1. Clone the Repository
 ```bash
@@ -186,7 +186,7 @@ Open **[http://127.0.0.1:8000](http://127.0.0.1:8000)** in your browser!
 
 ---
 
-## 🚀 Cloud Deployment (Render)
+##  Cloud Deployment (Render)
 
 This repository is pre-configured for **Render** via `render.yaml` and `build.sh`.
 
@@ -210,7 +210,7 @@ This repository is pre-configured for **Render** via `render.yaml` and `build.sh
 
 ---
 
-## 📄 Example Forensic JSON Certificate
+## 📄 xample Forensic JSON Certificate
 
 ```json
 {
@@ -243,15 +243,10 @@ This repository is pre-configured for **Render** via `render.yaml` and `build.sh
 }
 ```
 
----
-
-## 📜 License
-
-Distributed under the **MIT License**. See `LICENSE` for more information.
 
 ---
 
-## 👤 Author & Maintainer
+## Author & Maintainer
 
 **Ayush Pandey**
 - **GitHub**: [@Ayush26-03](https://github.com/Ayush26-03)
